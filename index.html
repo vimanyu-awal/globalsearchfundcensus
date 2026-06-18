@@ -10,7 +10,7 @@
 <style>
   :root{
     --paper:#F4F5F1; --surface:#FFFFFF; --ink:#1A1C19; --ink-soft:#41443E;
-    --muted:#71746C; --muted2:#9DA097; --rule:#E3E4DD; --rule2:#EDEEE8;
+    --muted:#71746C; --muted2:#868981; --rule:#E3E4DD; --rule2:#EDEEE8;
     --accent:#1D4E6B; --accent-soft:#E7EEF2;
     --land:#E7E8E1; --land-active:#DEE5E6;
     --op:#2E8B6B; --se:#3A6EA5; --ex:#BE8A33; --ra:#875FA0; --en:#8A8B82; --pi:#BCBDB3;
@@ -78,13 +78,14 @@
   .donut-seg{stroke:#FFFFFF;stroke-width:.6}
   .donut-count{font-family:var(--mono);font-weight:500;fill:#fff;text-anchor:middle;dominant-baseline:central;pointer-events:none}
   .sel-ring{fill:none;stroke:var(--accent);stroke-width:1.4}
-  .map-legend{position:absolute;left:14px;bottom:12px;background:rgba(255,255,255,.92);border:1px solid var(--rule);border-radius:3px;padding:9px 11px;display:flex;flex-direction:column;gap:5px}
-  .map-legend .ml-row{display:flex;align-items:center;gap:6px}
-  .ml-dot{width:9px;height:9px;border-radius:50%}
-  .ml-t{font-size:10.5px;color:var(--ink-soft)}
   .map-reset{position:absolute;right:14px;top:12px;background:rgba(255,255,255,.92);border:1px solid var(--rule);border-radius:2px;font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding:6px 9px;display:none}
   .map-reset.show{display:block}
-  .atlas-hint{font-family:var(--mono);font-size:10px;color:var(--muted2);letter-spacing:.05em;text-transform:uppercase;text-align:center;padding:9px 0 2px}
+  .map-foot{display:flex;align-items:center;justify-content:space-between;gap:14px 18px;flex-wrap:wrap;padding:11px 2px 2px}
+  .map-legend{display:flex;flex-wrap:wrap;gap:10px 14px}
+  .map-legend .ml-row{display:flex;align-items:center;gap:5px}
+  .ml-dot{width:9px;height:9px;border-radius:50%}
+  .ml-t{font-size:11px;color:var(--ink-soft)}
+  .atlas-hint{font-family:var(--mono);font-size:9.5px;color:var(--muted2);letter-spacing:.04em;text-transform:uppercase;text-align:right;max-width:340px}
   #tooltip{position:fixed;pointer-events:none;z-index:120;background:var(--ink);color:#F4F5F1;border-radius:3px;padding:8px 10px;font-size:11px;line-height:1.45;max-width:230px;opacity:0;transition:opacity .12s;box-shadow:0 6px 20px rgba(0,0,0,.25)}
   .tt-name{font-weight:600;margin-bottom:3px}
   .tt-row{display:flex;align-items:center;gap:5px;color:#C9CCC3;font-size:10.5px}
@@ -127,7 +128,8 @@
   .vaxis{display:flex;justify-content:space-between;margin-top:7px}
   .vaxis span{font-family:var(--mono);font-size:9px;color:var(--muted2)}
   .lifecycle{display:flex;height:34px;border-radius:3px;overflow:hidden;border:1px solid var(--rule)}
-  .lc-seg{display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-variant-numeric:tabular-nums;min-width:2px}
+  .lc-seg{display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-variant-numeric:tabular-nums;min-width:3px}
+  .chart-empty{font-size:12px;color:var(--muted2);padding:8px 0}
   .lc-legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:12px}
   .lc-key{display:flex;align-items:center;gap:6px;font-size:11.5px;color:var(--ink-soft)}
   .lc-key .k{width:10px;height:10px;border-radius:2px}
@@ -165,10 +167,10 @@
   .clist-item{display:flex;align-items:center;gap:10px;padding:11px 20px;border-bottom:1px solid var(--rule2);cursor:pointer}
   .clist-item:hover{background:#FAFBF8}
   .clist-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
-  .clist-main{min-width:0;flex:1}
+  .clist-main{min-width:0;flex:1;display:flex;flex-direction:column;gap:2px}
   .clist-name{font-size:13px;font-weight:500;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .clist-sub{font-size:11px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-  .clist-yr{font-family:var(--mono);font-size:10px;color:var(--muted2);flex-shrink:0}
+  .clist-yr{font-family:var(--mono);font-size:10px;color:var(--muted2);flex-shrink:0;align-self:flex-start;padding-top:1px}
 
   .empty{padding:60px 20px;text-align:center}
   .empty-h{font-family:var(--serif);font-size:20px;color:var(--muted)}
@@ -238,9 +240,11 @@
     <div class="map-frame">
       <svg id="map" preserveAspectRatio="xMidYMid meet" role="img" aria-label="World map of search-fund activity"></svg>
       <button class="map-reset" id="mapReset">Reset view</button>
-      <div class="map-legend" id="mapLegend"></div>
     </div>
-    <div class="atlas-hint">Circle area is proportional to the number of funds · click a country to list its funds · choose a region to zoom</div>
+    <div class="map-foot">
+      <div class="map-legend" id="mapLegend"></div>
+      <div class="atlas-hint">Circle area ∝ number of funds · click a country for its funds · pick a region to zoom</div>
+    </div>
   </section>
 
   <!-- DIRECTORY -->
@@ -281,6 +285,7 @@ const STATUS_ORDER=["operating","searching","raising","exited","search_ended","p
 const MODEL={traditional:"Traditional",self_funded:"Self-funded",accelerator:"Accelerator"};
 const REGIONS=["Europe","Latin America","Asia-Pacific","Africa & Middle East"];
 const REGION_SHORT={"Europe":"Europe","Latin America":"Latin America","Asia-Pacific":"Asia-Pacific","Africa & Middle East":"Africa & ME"};
+const REGION_SEG={"Europe":"Europe","Latin America":"LatAm","Asia-Pacific":"APAC","Africa & Middle East":"Africa/ME"};
 const VINTAGE_BUCKETS=[
   ["all","All vintages",()=>true],
   ["pre15","Pre-2015",v=>v&&v<2015],
@@ -368,18 +373,7 @@ function renderFigs(rows){
 
 /* ---------- MAP ---------- */
 let curViewBox=[0,0,vw,vh];
-function setViewBox(vb,animate){
-  const map=document.getElementById("map");
-  if(!animate||reduce){curViewBox=vb;map.setAttribute("viewBox",vb.join(" "));return;}
-  const from=curViewBox.slice(),to=vb,t0=performance.now(),dur=620;
-  function step(now){
-    const k=Math.min(1,(now-t0)/dur),e=1-Math.pow(1-k,3);
-    const cur=from.map((f,i)=>f+(to[i]-f)*e);
-    map.setAttribute("viewBox",cur.join(" "));
-    if(k<1)requestAnimationFrame(step);else curViewBox=to;
-  }
-  requestAnimationFrame(step);
-}
+let mapAgg={};
 function regionViewBox(region){
   if(!region)return [0,0,vw,vh];
   const [lo0,la0,lo1,la1]=REGION_BOX[region];
@@ -391,53 +385,58 @@ function regionViewBox(region){
 function arc(cx,cy,r,a0,a1){
   const x0=cx+r*Math.cos(a0),y0=cy+r*Math.sin(a0),x1=cx+r*Math.cos(a1),y1=cy+r*Math.sin(a1);
   const large=(a1-a0)>Math.PI?1:0;
-  return `M${cx.toFixed(1)} ${cy.toFixed(1)} L${x0.toFixed(1)} ${y0.toFixed(1)} A${r} ${r} 0 ${large} 1 ${x1.toFixed(1)} ${y1.toFixed(1)} Z`;
+  return `M${cx.toFixed(1)} ${cy.toFixed(1)} L${x0.toFixed(1)} ${y0.toFixed(1)} A${r.toFixed(2)} ${r.toFixed(2)} 0 ${large} 1 ${x1.toFixed(1)} ${y1.toFixed(1)} Z`;
+}
+function setViewBox(vb,animate){
+  const map=document.getElementById("map");
+  if(!animate||reduce){curViewBox=vb;map.setAttribute("viewBox",vb.join(" "));renderDots();return;}
+  const from=curViewBox.slice(),to=vb,t0=performance.now(),dur=620;
+  (function step(now){
+    const k=Math.min(1,(now-t0)/dur),e=1-Math.pow(1-k,3);
+    curViewBox=from.map((f,i)=>f+(to[i]-f)*e);
+    map.setAttribute("viewBox",curViewBox.join(" "));
+    renderDots();
+    if(k<1)requestAnimationFrame(step);else{curViewBox=to;map.setAttribute("viewBox",to.join(" "));renderDots();}
+  })(performance.now());
+}
+// dots are kept a constant on-screen size by scaling radii with the current zoom
+function renderDots(){
+  const dotsEl=document.getElementById("mapDots");
+  if(!dotsEl)return;
+  const scale=curViewBox[2]/vw;
+  let dots="",hits="";
+  Object.values(mapAgg).forEach(a=>{
+    if(!a.rep)return;
+    const [cx,cy]=a.rep,n=a.funds.length;
+    const baseR=4.4+2.4*Math.sqrt(n),r=baseR*scale,sw=(0.6*scale).toFixed(2);
+    const segs=STATUS_ORDER.filter(s=>a.counts[s]);
+    let g="<g>";
+    if(segs.length===1){
+      g+=`<circle cx="${cx}" cy="${cy}" r="${r.toFixed(2)}" fill="${STATUS[segs[0]].hex}" stroke="#fff" stroke-width="${sw}"/>`;
+    }else{
+      let ang=-Math.PI/2;
+      segs.forEach(s=>{const a1=ang+a.counts[s]/n*2*Math.PI;g+=`<path fill="${STATUS[s].hex}" stroke="#fff" stroke-width="${sw}" d="${arc(cx,cy,r,ang,a1)}"/>`;ang=a1;});
+    }
+    if(st.selCountry===a.iso)g+=`<circle fill="none" stroke="#1D4E6B" stroke-width="${(1.6*scale).toFixed(2)}" cx="${cx}" cy="${cy}" r="${(r+3.5*scale).toFixed(2)}"/>`;
+    if(baseR>=9)g+=`<text x="${cx}" y="${cy}" font-size="${(Math.min(baseR*0.85,10)*scale).toFixed(2)}" fill="#fff" text-anchor="middle" dominant-baseline="central" font-family="var(--mono)" font-weight="500" style="pointer-events:none">${n}</text>`;
+    g+="</g>";dots+=g;
+    hits+=`<circle class="country-hit" data-iso="${a.iso}" tabindex="0" role="button" aria-label="${esc(a.name)}, ${n} fund${n>1?"s":""}" cx="${cx}" cy="${cy}" r="${Math.max(r,7*scale).toFixed(2)}"/>`;
+  });
+  dotsEl.innerHTML=dots+hits;
+}
+function renderBase(rows){
+  mapAgg=aggregate(rows);
+  const activeIso=new Set(Object.keys(mapAgg));
+  let base="";
+  GEO.countries.forEach(c=>{base+=`<path class="country-base${activeIso.has(c.iso)?" active":""}" d="${c.d}"/>`;});
+  document.getElementById("mapBase").innerHTML=base;
 }
 function renderMap(rows){
   const map=document.getElementById("map");
   map.setAttribute("viewBox",curViewBox.join(" "));
-  const agg=aggregate(rows);
-  const activeIso=new Set(Object.keys(agg));
-  // base paths
-  let base="";
-  GEO.countries.forEach(c=>{
-    const cls="country-base"+(activeIso.has(c.iso)?" active":"");
-    base+=`<path class="${cls}" d="${c.d}"/>`;
-  });
-  // donuts
-  const maxCount=Math.max(1,...Object.values(agg).map(a=>a.funds.length));
-  let donuts="",hits="";
-  Object.values(agg).forEach(a=>{
-    if(!a.rep)return;
-    const[cx,cy]=a.rep,n=a.funds.length;
-    const r=4.4+2.4*Math.sqrt(n);
-    const segs=STATUS_ORDER.filter(s=>a.counts[s]);
-    let g=`<g class="country-grp" data-iso="${a.iso}">`;
-    if(segs.length===1){
-      g+=`<circle cx="${cx}" cy="${cy}" r="${r}" fill="${STATUS[segs[0]].hex}" class="donut-seg"/>`;
-    }else{
-      let ang=-Math.PI/2;
-      segs.forEach(s=>{
-        const frac=a.counts[s]/n,a1=ang+frac*2*Math.PI;
-        g+=`<path class="donut-seg" fill="${STATUS[s].hex}" d="${arc(cx,cy,r,ang,a1)}"/>`;
-        ang=a1;
-      });
-    }
-    if(st.selCountry===a.iso) g+=`<circle class="sel-ring" cx="${cx}" cy="${cy}" r="${r+3}"/>`;
-    if(r>=11) g+=`<text class="donut-count" x="${cx}" y="${cy}" font-size="${Math.min(r*0.9,11)}">${n}</text>`;
-    g+=`</g>`;
-    donuts+=g;
-    hits+=`<circle class="country-hit" data-iso="${a.iso}" cx="${cx}" cy="${cy}" r="${Math.max(r,7)}"/>`;
-  });
-  map.innerHTML=base+donuts+hits;
-  // interactions
-  map.querySelectorAll(".country-hit").forEach(el=>{
-    const iso=el.getAttribute("data-iso");
-    el.addEventListener("click",()=>openCountry(iso));
-    el.addEventListener("mousemove",ev=>showTip(ev,iso,agg));
-    el.addEventListener("mouseleave",hideTip);
-  });
-  // legend
+  map.innerHTML='<g id="mapBase"></g><g id="mapDots"></g>';
+  renderBase(rows);
+  renderDots();
   document.getElementById("mapLegend").innerHTML=STATUS_ORDER.map(s=>`<div class="ml-row"><span class="ml-dot" style="background:${STATUS[s].hex}"></span><span class="ml-t">${STATUS[s].label}</span></div>`).join("");
 }
 function showTip(ev,iso,agg){
@@ -504,6 +503,7 @@ function renderDir(rows){
 
 /* ---------- INSIGHTS ---------- */
 function barChart(items,colorFn){
+  if(!items.length)return `<div class="chart-empty">No data for this selection.</div>`;
   const max=Math.max(1,...items.map(i=>i[1]));
   return items.map(([lab,val,extra])=>`<div class="barrow"><div class="blab">${esc(lab)}</div><div class="bartrack"><div class="barfill" style="width:${val/max*100}%;background:${colorFn?colorFn(lab,extra):"var(--accent)"}"></div></div><div class="barval">${val}</div></div>`).join("");
 }
@@ -512,11 +512,18 @@ function renderInsights(rows){
   if(!rows.length){el.innerHTML=`<div class="empty"><div class="empty-h">No funds match these filters</div><div class="empty-s">Clear filters to see the full picture</div></div>`;return;}
   // vintage histogram
   const vy=rows.map(d=>d.vintage).filter(Boolean);
-  const minY=Math.min(...vy),maxY=Math.max(...vy);
-  const years=[];for(let y=minY;y<=maxY;y++)years.push(y);
-  const vcount=years.map(y=>rows.filter(d=>d.vintage===y).length);
-  const vmax=Math.max(1,...vcount);
-  const vbars=years.map((y,i)=>`<div class="vbar" style="height:${vcount[i]/vmax*100}%" title="${y}: ${vcount[i]}"></div>`).join("");
+  let vintBody;
+  if(!vy.length){
+    vintBody=`<div class="chart-empty">No vintage data for this selection.</div>`;
+  }else{
+    const minY=Math.min(...vy),maxY=Math.max(...vy);
+    const years=[];for(let y=minY;y<=maxY;y++)years.push(y);
+    const vcount=years.map(y=>rows.filter(d=>d.vintage===y).length);
+    const vmax=Math.max(1,...vcount);
+    const vbars=years.map((y,i)=>`<div class="vbar" style="height:${vcount[i]/vmax*100}%" title="${y}: ${vcount[i]}"></div>`).join("");
+    const midY=Math.round((minY+maxY)/2);
+    vintBody=`<div class="vint">${vbars}</div><div class="vaxis"><span>${minY}</span>${midY!==minY&&midY!==maxY?`<span>${midY}</span>`:""}<span>${maxY}</span></div>`;
+  }
   // lifecycle
   const total=rows.length;
   const lcSeg=STATUS_ORDER.filter(s=>rows.some(d=>d.status===s)).map(s=>{
@@ -542,10 +549,7 @@ function renderInsights(rows){
     <div class="fig-block">
       <div class="fig-h">The rise of the model</div>
       <div class="fig-cap">Funds by the year their search began. The model barely existed outside North America before the mid-2010s; most of this dataset was formed in the last decade.</div>
-      <div class="fig-body">
-        <div class="vint">${vbars}</div>
-        <div class="vaxis"><span>${minY}</span><span>${Math.round((minY+maxY)/2)}</span><span>${maxY}</span></div>
-      </div>
+      <div class="fig-body">${vintBody}</div>
     </div>
     <div class="fig-block">
       <div class="fig-h">Where each fund stands</div>
@@ -584,27 +588,36 @@ function chipHTML(text,hex,solid){
   return `<span class="badge" style="color:${hex}">${esc(text)}</span>`;
 }
 function prow(l,v){return (v==null||v==="")?"":`<div class="p-row"><span class="p-l">${esc(l)}</span><span class="p-v">${esc(v)}</span></div>`;}
-function openCountry(iso){
-  st.selCountry=iso;st.selFund=null;
+function renderCountryPanel(iso){
   const rows=filtered().filter(d=>d.id.split("-")[0].toUpperCase()===iso);
-  if(!rows.length)return;
+  if(!rows.length)return false;
   const name=rows[0].primary_country;
-  const panel=document.getElementById("panel");
   const items=rows.slice().sort((a,b)=>STATUS_ORDER.indexOf(a.status)-STATUS_ORDER.indexOf(b.status)).map(d=>{
     const s=STATUS[d.status];
+    const nm=d.searcher_display||d.fund_name||"Unnamed";
+    const subParts=[];
+    if(d.searcher_display&&d.fund_name)subParts.push(d.fund_name);
+    if(d.sector)subParts.push(d.sector);
+    const sub=subParts.join(" · ");
     return `<div class="clist-item" data-id="${esc(d.id)}">
       <span class="clist-dot" style="background:${s.hex}"></span>
-      <span class="clist-main"><span class="clist-name">${esc(d.searcher_display||d.fund_name||"Unnamed")}</span><span class="clist-sub">${esc(d.fund_name||"")}${d.sector?" · "+esc(d.sector):""}</span></span>
+      <span class="clist-main"><span class="clist-name">${esc(nm)}</span>${sub?`<span class="clist-sub">${esc(sub)}</span>`:""}</span>
       <span class="clist-yr">${d.vintage?((d.vintage_approx?"~":"")+d.vintage):""}</span>
     </div>`;
   }).join("");
+  const panel=document.getElementById("panel");
   panel.innerHTML=`<div class="p-head">
     <div><div class="p-eyebrow">${rows.length} fund${rows.length>1?"s":""}</div><div class="p-title">${esc(name)}</div></div>
     <button class="p-x" onclick="closePanel()">✕</button></div>
     <div class="clist">${items}</div>`;
   panel.querySelectorAll(".clist-item").forEach(it=>it.addEventListener("click",()=>openFund(it.getAttribute("data-id"),iso)));
-  panel.classList.add("show");
-  renderMap(filtered());
+  return true;
+}
+function openCountry(iso){
+  st.selCountry=iso;st.selFund=null;hideTip();
+  if(!renderCountryPanel(iso)){closePanel();return;}
+  document.getElementById("panel").classList.add("show");
+  if(st.tab==="atlas")renderDots();
 }
 function openFund(id,fromIso){
   const d=DATA.find(x=>x.id===id);if(!d)return;
@@ -650,7 +663,7 @@ function openFund(id,fromIso){
     <div class="p-body">${body}</div>`;
   panel.classList.add("show");
 }
-function closePanel(){document.getElementById("panel").classList.remove("show");st.selCountry=null;st.selFund=null;if(st.tab==="atlas")renderMap(filtered());}
+function closePanel(){document.getElementById("panel").classList.remove("show");st.selCountry=null;st.selFund=null;if(st.tab==="atlas")renderDots();}
 window.closePanel=closePanel;window.openCountry=openCountry;
 
 /* ---------- controls ---------- */
@@ -663,15 +676,14 @@ function buildCountry(){
 }
 function buildRegionSeg(){
   const seg=document.getElementById("regionSeg");
-  const opts=[["All",null],...REGIONS.map(r=>[REGION_SHORT[r],r])];
+  const opts=[["All",null],...REGIONS.map(r=>[REGION_SEG[r],r])];
   seg.innerHTML=opts.map(([l,v])=>`<button data-r="${v===null?"":esc(v)}" class="${st.region===v?"on":""}">${esc(l)}</button>`).join("");
   seg.querySelectorAll("button").forEach(b=>b.addEventListener("click",()=>{
     const v=b.getAttribute("data-r")||null;
     st.region=v;st.country="All";st.selCountry=null;closePanelSilent();
-    buildCountry();
+    buildCountry();render();
     if(st.tab==="atlas")setViewBox(regionViewBox(v),true);
     document.getElementById("mapReset").classList.toggle("show",!!v);
-    render();
   }));
 }
 function closePanelSilent(){document.getElementById("panel").classList.remove("show");}
@@ -683,6 +695,8 @@ function setTab(t){
   document.getElementById("view-atlas").style.display=t==="atlas"?"block":"none";
   document.getElementById("view-directory").style.display=t==="directory"?"block":"none";
   document.getElementById("view-insights").style.display=t==="insights"?"block":"none";
+  closePanelSilent();st.selCountry=null;st.selFund=null;
+  if(t==="atlas")curViewBox=regionViewBox(st.region);
   render();
 }
 
@@ -693,6 +707,7 @@ function render(){
   if(st.tab==="atlas")renderMap(rows);
   else if(st.tab==="directory")renderDir(rows);
   else renderInsights(rows);
+  if(st.selCountry&&!st.selFund){ if(!renderCountryPanel(st.selCountry)){closePanelSilent();st.selCountry=null;} }
   const any=st.region||st.country!=="All"||st.status!=="All"||st.model!=="All"||st.vintage!=="all"||st.conf!=="All"||st.search;
   document.getElementById("clear").style.display=any?"inline-block":"none";
   document.getElementById("ftrText").innerHTML=`Showing ${rows.length} of ${DATA.length} entries · schema v${CENSUS.schema_version} · updated ${CENSUS.generated}. A free, non-commercial reference — Kellogg Zell Fellows Give-Back Initiative. Roughly 145 funds in the IESE universe remain unnamed publicly; corrections welcome via the project's contribution channels.`;
@@ -707,17 +722,23 @@ document.getElementById("fModel").addEventListener("change",e=>{st.model=e.targe
 document.getElementById("fVintage").addEventListener("change",e=>{st.vintage=e.target.value;render();});
 document.getElementById("fConf").addEventListener("change",e=>{st.conf=e.target.value;render();});
 document.getElementById("clear").addEventListener("click",()=>{
-  Object.assign(st,{region:null,country:"All",status:"All",model:"All",vintage:"all",conf:"All",search:"",selCountry:null});
+  Object.assign(st,{region:null,country:"All",status:"All",model:"All",vintage:"all",conf:"All",search:"",selCountry:null,selFund:null});
   document.getElementById("search").value="";
   ["fStatus","fModel","fVintage","fConf"].forEach(id=>document.getElementById(id).selectedIndex=0);
-  buildRegionSeg();buildCountry();
-  setViewBox([0,0,vw,vh],true);document.getElementById("mapReset").classList.remove("show");
-  closePanelSilent();render();
+  buildRegionSeg();buildCountry();closePanelSilent();render();
+  if(st.tab==="atlas")setViewBox([0,0,vw,vh],true);
+  document.getElementById("mapReset").classList.remove("show");
 });
 document.getElementById("mapReset").addEventListener("click",()=>{
-  st.region=null;st.country="All";buildRegionSeg();buildCountry();
-  setViewBox([0,0,vw,vh],true);document.getElementById("mapReset").classList.remove("show");render();
+  st.region=null;st.country="All";buildRegionSeg();buildCountry();render();
+  setViewBox([0,0,vw,vh],true);document.getElementById("mapReset").classList.remove("show");
 });
+// delegated map interactions (survive dot re-renders)
+const mapEl=document.getElementById("map");
+mapEl.addEventListener("click",e=>{const h=e.target.closest(".country-hit");if(h)openCountry(h.getAttribute("data-iso"));});
+mapEl.addEventListener("mousemove",e=>{const h=e.target.closest(".country-hit");if(h)showTip(e,h.getAttribute("data-iso"),mapAgg);else hideTip();});
+mapEl.addEventListener("mouseleave",hideTip);
+mapEl.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){const h=e.target.closest(".country-hit");if(h){e.preventDefault();openCountry(h.getAttribute("data-iso"));}}});
 const backdrop=document.getElementById("backdrop");
 document.getElementById("openMethod").addEventListener("click",()=>{
   backdrop.innerHTML=`<div class="modal"><div class="modal-h"><div class="mt">Methodology &amp; notes</div><button class="p-x" onclick="document.getElementById('backdrop').classList.remove('show')">✕</button></div>
