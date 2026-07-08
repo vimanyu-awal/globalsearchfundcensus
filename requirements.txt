@@ -1,0 +1,9 @@
+# Microcap Deep-Value Pipeline — runtime dependencies
+# Python 3.11+
+requests>=2.31
+pandas>=2.0
+duckdb>=1.0
+yfinance>=0.2.40
+# anthropic is only needed from Phase 2 onward (LLM triage/scoring/memos).
+# Pinned loosely here so a fresh clone can run the weekly job end to end later.
+anthropic>=0.40
