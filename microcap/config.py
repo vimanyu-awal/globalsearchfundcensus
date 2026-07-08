@@ -66,8 +66,9 @@ class Params:
     # historically also "NYSEArca"/"OTC").
     exchanges: tuple[str, ...] = ("NYSE", "Nasdaq", "NYSE American")
 
-    # TBD in SPEC — assume NO until compliance confirms (SPEC 0).
-    otc_allowed: bool = field(default_factory=lambda: _bool_env("OTC_ALLOWED", False))
+    # SPEC default was NO pending compliance; owner confirmed YES (research only,
+    # not trading yet). Still env-overridable for a stricter run.
+    otc_allowed: bool = field(default_factory=lambda: _bool_env("OTC_ALLOWED", True))
 
     # Staleness: latest annual report older than this many months => DARK.
     dark_after_months: int = 15

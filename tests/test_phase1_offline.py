@@ -181,7 +181,9 @@ def test_build_universe_end_to_end(monkeypatch=None):
     sec_edgar.fetch_submissions = fake_subs
     universe.get_price = fake_price
     try:
-        rows, diag = universe.build_universe(asof=ASOF)
+        # Pin params so the funnel math is independent of config defaults; this
+        # scenario deliberately exercises the OTC gate with OTC disallowed.
+        rows, diag = universe.build_universe(asof=ASOF, params=config.Params(otc_allowed=False))
     finally:
         (sec_edgar.fetch_tickers_exchange, sec_edgar.fetch_companyfacts,
          sec_edgar.fetch_submissions, universe.get_price) = orig
